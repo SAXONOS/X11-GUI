@@ -1,0 +1,64 @@
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    XEvent event;
+    Display* display;
+    int screen;
+    Window window;
+    GC gc;
+    Atom wmDeleteMessage;
+
+    // Open connection to the X server
+    display = XOpenDisplay(NULL);
+    if (display == NULL) {
+        fprintf(stderr, "Unable to open X display\n");
+        exit(1);
+    }
+
+    // Get the default screen of the display
+    screen = DefaultScreen(display);
+
+    // Create a simple window with different size (e.g., width: 500, height: 400)
+    window = XCreateSimpleWindow(display, RootWindow(display, screen), 50, 50, 500, 400, 1, 
+                                 BlackPixel(display, screen), WhitePixel(display, screen));
+
+    // Select the kind of events we are interested in
+    XSelectInput(display, window, ExposureMask | KeyPressMask);
+
+    // Map (show) the window
+    XMapWindow(display, window);
+
+    // Create a graphics context
+    gc = XCreateGC(display, window, 0, NULL);
+
+    // Set foreground and background colors for the graphics context
+    XSetForeground(display, gc, BlackPixel(display, screen));
+    XSetBackground(display, gc, WhitePixel(display, screen));
+
+    // Handle window close event
+    wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(display, window, &wmDeleteMessage, 1);
+
+    // Event loop
+    for (;;) {
+        XNextEvent(display, &event);
+        if (event.type == Expose) {
+            // Draw the string on the window
+            XDrawString(display, window, gc, 100, 100, "Thanks for Watching!", 20);
+        } else if (event.type == ClientMessage) {
+            if (event.xclient.data.l[0] == wmDeleteMessage) {
+                break;
+            }
+        }
+    }
+
+    // Cleanup
+    XFreeGC(display, gc);
+    XDestroyWindow(display, window);
+    XCloseDisplay(display);
+
+    return 0;
+}
