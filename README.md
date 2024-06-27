@@ -9,7 +9,7 @@ To ensure that package is correctly installed:  dpkg -l | grep libx11-dev
 
 #include <X11/Xlib.h>  X11 library header file which provides necessary functions and types for interacting with the X server.
 
-#include <X11/Xatom.h  X11 library header file is necessary for handling window manager protocols, specifically for defining atoms like WM_DELETE_WINDOW, which is used to properly handle the window close event. Without this header, you won't be able to define or use atoms like WM_DELETE_WINDOW.
+#include <X11/Xatom.h>  X11 library header file is necessary for handling window manager protocols, specifically for defining atoms like WM_DELETE_WINDOW, which is used to properly handle the window close event. Without this header, you won't be able to define or use atoms like WM_DELETE_WINDOW.
 
 
 To handle Window Close Event:
